@@ -296,64 +296,22 @@ Result_with_string Util_decoder_read_packet(std::string* type, int session)
 Result_with_string Util_decoder_ready_audio_packet(int session)
 {
 	Result_with_string result;
-	int ffmpeg_result = 0;
-
+	
 	av_packet_free(&util_audio_decoder_packet[session]);
-	util_audio_decoder_packet[session] = av_packet_alloc();
-	if(!util_audio_decoder_packet[session])
-	{
-		result.error_description = "av_packet_alloc() failed";
-		goto fail;
-	}
-
-	av_packet_unref(util_audio_decoder_packet[session]);
-	ffmpeg_result = av_packet_ref(util_audio_decoder_packet[session], util_audio_decoder_cache_packet[session]);
-	if(ffmpeg_result != 0)
-	{
-		result.error_description = "av_packet_ref() failed" + std::to_string(ffmpeg_result);
-		goto fail;
-	}
-
-	av_packet_free(&util_audio_decoder_cache_packet[session]);
-	return result;
-
-	fail:
-
-	av_packet_free(&util_audio_decoder_packet[session]);
-	result.code = DEF_ERR_FFMPEG_RETURNED_NOT_SUCCESS;
-	result.string = DEF_ERR_FFMPEG_RETURNED_NOT_SUCCESS_STR;
+	util_audio_decoder_packet[session] = util_audio_decoder_cache_packet[session];
+	util_audio_decoder_cache_packet[session] = NULL;
+	
 	return result;
 }
 
 Result_with_string Util_decoder_ready_video_packet(int session)
 {
 	Result_with_string result;
-	int ffmpeg_result = 0;
-
+	
 	av_packet_free(&util_video_decoder_packet[session]);
-	util_video_decoder_packet[session] = av_packet_alloc();
-	if(!util_video_decoder_packet[session])
-	{
-		result.error_description = "av_packet_alloc() failed";
-		goto fail;
-	}
-
-	av_packet_unref(util_video_decoder_packet[session]);
-	ffmpeg_result = av_packet_ref(util_video_decoder_packet[session], util_video_decoder_cache_packet[session]);
-	if(ffmpeg_result != 0)
-	{
-		result.error_description = "av_packet_ref() failed" + std::to_string(ffmpeg_result);
-		goto fail;
-	}
-
-	av_packet_free(&util_video_decoder_cache_packet[session]);
-	return result;
-
-	fail:
-
-	av_packet_free(&util_video_decoder_packet[session]);
-	result.code = DEF_ERR_FFMPEG_RETURNED_NOT_SUCCESS;
-	result.string = DEF_ERR_FFMPEG_RETURNED_NOT_SUCCESS_STR;
+	util_video_decoder_packet[session] = util_video_decoder_cache_packet[session];
+	util_video_decoder_cache_packet[session] = NULL;
+	
 	return result;
 }
 
